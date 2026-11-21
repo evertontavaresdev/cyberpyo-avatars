@@ -14,7 +14,7 @@ Cada página é um único arquivo `index.html`, sem dependências nem build. Bas
 ## Personalização do avatar
 
 - Uniforme: regular, do mar, do ar e escotista
-- 11 cabelos, 6 cores de cabelo, 6 cores de olhos, 5 tons de pele
+- 12 cabelos (incluindo topete), 6 cores de cabelo, 6 cores de olhos, 5 tons de pele
 - Lenço com duas cores livres (principal e listras)
 - Expressão, barba e bigode, óculos de grau e escuros
 - Poses: sentido, saudação e fazendo 2, sempre com a forquilha
