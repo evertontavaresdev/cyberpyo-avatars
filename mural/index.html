@@ -356,7 +356,7 @@ function makePart(g,GW,GH){return (fn,oc,keep=[])=>{const m=new Map();
 function paint(cv,g,s){cv.width=g[0].length*s;cv.height=g.length*s;const ctx=cv.getContext('2d');
   g.forEach((row,y)=>row.forEach((c,x)=>{if(c){ctx.fillStyle=c;ctx.fillRect(x*s,y*s,s,s)}}))}
 /* ---------- mapa do Recanto Marista (vista de cima) ---------- */
-const MW=640,MH=334;
+const MW=672,MH=334,WALLX=640;
 function drawMap(){
   const g=Array.from({length:MH},()=>Array(MW).fill('#5f9a48'));
   const D=mk((x,y,c)=>{x=Math.floor(x);y=Math.floor(y);if(x>=0&&x<MW&&y>=0&&y<MH)g[y][x]=c});
@@ -372,13 +372,13 @@ function drawMap(){
   const tree=(x,y,r,ci)=>{const[c,s,l]=ci!=null&&typeof ci==='object'?ci:TREEC[Math.floor(rnd()*TREEC.length)];
     D.ell(x+r*.35,y+r*.45,r,r*.9,'#2a4524');D.ell(x,y,r,r,c,{s,l});D.ell(x-r*.35,y-r*.35,r*.35,r*.28,l);
     if(r>5){D.p(x+r*.2,y-r*.1,s);D.p(x-r*.1,y+r*.3,s)}};
-  const forest=(pts,step=7,rmin=5,rmax=8)=>{const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
+  const forest=(pts,step=10,rmin=5,rmax=8)=>{const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
     for(let y=Math.min(...ys);y<=Math.max(...ys);y+=step)for(let x=Math.min(...xs)+((y/step)%2)*step/2;x<=Math.max(...xs);x+=step){
-      const jx=x+(rnd()-.5)*step*.7,jy=y+(rnd()-.5)*step*.7;if(inPoly(jx,jy,pts))tree(jx,jy,rmin+rnd()*(rmax-rmin))}};
+      const jx=x+(rnd()-.5)*step*.7,jy=y+(rnd()-.5)*step*.7;if(rnd()>.22&&inPoly(jx,jy,pts))tree(jx,jy,rmin+rnd()*(rmax-rmin))}};
 
   // ---- lago ----
   const lake=[[70,10],[110,6],[150,8],[185,14],[189,48],[183,80],[160,93],[120,96],[94,90],[73,70],[66,40]];
-  for(let a=0;a<44;a++){const t=a/44*Math.PI*2;tree(127+Math.cos(t)*68,51+Math.sin(t)*52,5+rnd()*3)}
+  for(let a=0;a<30;a++){const t=a/30*Math.PI*2;tree(127+Math.cos(t)*68,51+Math.sin(t)*52,5+rnd()*3)}
   part(P=>{P.poly(lake,'#2e5866');P.each((x,y)=>(x*5+y*11)%61===0?'#36697a':null)},'#1d3a42');
   D.ell(150,30,5,1,'#3f7381');D.ell(110,62,7,1,'#3f7381');
   // ---- quadras ----
@@ -421,19 +421,30 @@ function drawMap(){
   D.r(316,236,333,248,'#d8d5cc');for(let y=238;y<248;y+=2)D.r(316,y,333,y,'#bdb9ae');
   // ---- floresta e bosques ----
   forest([[0,0],[62,0],[56,60],[52,110],[82,140],[130,168],[165,195],[176,228],[160,248],[110,252],[60,250],[0,252]]);
-  forest([[262,103],[300,93],[336,103],[338,140],[312,156],[272,147]],7,4,7);
-  forest([[326,28],[360,18],[402,28],[430,58],[434,110],[426,170],[410,192],[382,186],[366,132],[342,92],[322,62]],7,5,8);
-  forest([[300,0],[348,0],[346,24],[304,26]],7,4,7);
+  forest([[262,103],[300,93],[336,103],[338,140],[312,156],[272,147]],9,4,7);
+  forest([[326,28],[360,18],[402,28],[430,58],[434,110],[426,170],[410,192],[382,186],[366,132],[342,92],[322,62]],10,5,8);
+  forest([[300,0],[348,0],[346,24],[304,26]],9,4,7);
   forest([[388,0],[480,0],[480,30],[458,60],[420,52],[394,26]]);
   forest([[520,0],[640,0],[640,58],[600,64],[560,52],[524,38]]);
-  forest([[0,252],[180,250],[250,262],[256,276],[384,276],[440,266],[512,240],[640,234],[640,312],[0,312]],7,5,8);
+  forest([[0,252],[180,250],[250,262],[256,276],[384,276],[440,266],[512,240],[640,234],[640,310],[0,310]],10,5,8);
   tree(402,150,6,['#7a5a9a','#5f4580','#9a7ac0']);tree(487,243,5,['#7a5a9a','#5f4580','#9a7ac0']);tree(540,36,6,['#7a5a9a','#5f4580','#9a7ac0']);
   [[238,112,3],[226,165,3],[282,176,3],[300,178,3],[333,176,3],[196,132,3],[250,180,2.5],[355,180,3],[388,232,3],[230,200,3.5],[208,182,3],[612,232,4],[504,196,4],[506,218,4]].forEach(([x,y,r])=>tree(x,y,r));
   // ---- vias ----
+  // rua externa (fora do muro, à direita) e avenida de baixo
   D.r(0,312,MW-1,318,'#7a5a45');for(let x=0;x<MW;x+=5)D.p(x,314+(x%3),'#8c6a52');
   D.r(0,319,MW-1,MH-1,'#4a4a4e');for(let x=4;x<MW;x+=16)D.r(x,326,x+8,326,'#d8d8d8');
-  part(P=>{P.r(258,252,377,259,'#b8b5ac');P.line(261,256,262,296,7,'#9e9b94');P.line(262,296,276,304,7,'#9e9b94');P.line(276,304,428,304,7,'#9e9b94');P.line(428,304,444,294,7,'#9e9b94');P.line(444,294,452,312,7,'#9e9b94')},'#5b5852');
-  for(let x=320;x<331;x+=3)D.r(x,253,x+1,262,'#ffffff');for(let i=0;i<6;i++)D.line(430+i*2,300,436+i*2,306,1,'#e2c23a');
+  D.r(WALLX+2,0,WALLX+5,318,'#c9c4b8');for(let y=0;y<318;y+=6)D.r(WALLX+2,y,WALLX+5,y,'#b3ad9f');
+  D.r(WALLX+6,0,MW-1,MH-1,'#4a4a4e');D.r(MW-2,0,MW-1,MH-1,'#c9c4b8');for(let y=4;y<318;y+=16)D.r(WALLX+18,y,WALLX+18,y+8,'#e2c23a');
+  // estrada interna, conforme o traçado de referência
+  const RC='#9e9b94';
+  part(P=>{P.line(4,303,WALLX+2,303,7,RC);
+    P.line(262,303,262,261,7,RC);P.line(262,261,271,253,7,RC);P.line(271,253,372,253,7,RC);P.line(372,253,386,259,7,RC);P.line(386,259,399,281,7,RC);P.line(399,281,412,297,7,RC);P.line(412,297,426,303,7,RC);},'#5b5852');
+  for(let x=320;x<331;x+=3)D.r(x,250,x+1,256,'#ffffff');for(let x=20;x<WALLX-10;x+=14)D.r(x,303,x+5,303,'#c8c5be');
+  // muro com portão de entrada
+  part(P=>{P.r(0,309,WALLX,311,'#d8d2c4');P.r(WALLX,0,WALLX+1,311,'#d8d2c4');P.r(WALLX-1,0,WALLX-1,311,'#bdb6a6')},'#6e675a');
+  D.r(WALLX-2,300,WALLX+5,306,RC);D.r(WALLX+2,300,WALLX+5,300,'#5b5852');D.r(WALLX+2,306,WALLX+5,306,'#5b5852');
+  D.r(WALLX-10,298,WALLX-3,298,'#2a2a2e');D.r(WALLX-10,308,WALLX-3,308,'#2a2a2e');for(let x=WALLX-10;x<WALLX-3;x+=2){D.p(x,297,'#2a2a2e');D.p(x,309,'#2a2a2e')}
+  part(P=>{P.r(WALLX-3,293,WALLX+2,298,'#b5523b');P.r(WALLX-3,308,WALLX+2,313,'#b5523b');P.r(WALLX-3,293,WALLX+2,293,'#d06a50');P.r(WALLX-3,308,WALLX+2,308,'#d06a50')},'#5e2418');
   // ---- casinhas ----
   const hut=(x,y,w,h,c)=>{D.r(x+1,y+h,x+w+1,y+h+1,'#24401f');part(P=>{P.r(x,y,x+w,y+h,c);P.poly([[x,y],[x+w,y],[x+w/2,y+h/2]],shade(c,1.12));P.poly([[x,y+h],[x+w,y+h],[x+w/2,y+h/2]],shade(c,.85))},shade(c,.45))};
   hut(110,258,9,8,'#cf6e3f');hut(143,256,9,8,'#cf6e3f');hut(184,246,10,8,'#cf6e3f');hut(226,254,10,8,'#cf6e3f');
@@ -444,7 +455,7 @@ function drawMap(){
   [[226,159],[248,173]].forEach(([x,y])=>{D.p(x,y,'#d8d8d8');D.p(x+1,y+1,'#3a3a3a')});
   return g;
 }
-const LANDMARKS=[[127,51,'Lago'],[317,209,'Salão principal'],[469,93,'Quadra de basquete'],[469,130,'Quadra de areia'],[469,170,'Quadra de tênis'],[573,107,'Campo 1'],[573,183,'Campo 2'],[405,206,'Fogo de conselho'],[180,140,'Gramado']];
+const LANDMARKS=[[127,51,'Lago'],[317,209,'Salão principal'],[469,93,'Quadra de basquete'],[469,130,'Quadra de areia'],[469,170,'Quadra de tênis'],[573,107,'Campo 1'],[573,183,'Campo 2'],[405,206,'Fogo de conselho'],[180,140,'Gramado'],[WALLX-14,290,'Portão'],[WALLX+19,150,'Rua']];
 /* ---------- fundo genérico do gerador ---------- */
 function genScene(o){
   const S=96,T=100,g=Array.from({length:T},()=>Array(S).fill(null));
